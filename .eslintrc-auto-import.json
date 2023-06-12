@@ -1,0 +1,14 @@
+{
+  "globals": {
+    "React": true,
+    "_": true,
+    "browser": true,
+    "css": true,
+    "proxy": true,
+    "storage": true,
+    "store": true,
+    "useArrayStorageMutation": true,
+    "useSnapshot": true,
+    "useStorageMutation": true
+  }
+}
