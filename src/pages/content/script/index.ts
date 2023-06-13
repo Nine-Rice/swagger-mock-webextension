@@ -4,24 +4,39 @@ const moduleMap = {
   windowJs: browser.runtime.getURL("window.js"),
 };
 
+const CONTENT_SCRIPT_ID = "swaggerMockContent";
+
 // window对象挂载自定义属性
 const windowMounted = () => {
   const script = document.createElement("script");
-  script.setAttribute("id", "swaggerMockWindowJs");
   script.setAttribute("src", moduleMap.windowJs);
-  script.onload = async () => {
+  script.onload = async function () {
     const mockList = await storage.mockList.get();
     window.postMessage({
-      form: "swaggerMockContent",
-      data: {
-        module: moduleMap,
-        mockList,
-      },
+      source: CONTENT_SCRIPT_ID,
+      moduleMap,
+      mockList,
     });
+    // 注入监听接口的脚本
+    const script = document.createElement("script");
+    script.setAttribute("src", moduleMap.injectJs);
+    document.head.appendChild(script);
+    const currentScript = this as HTMLScriptElement;
+    currentScript.parentNode.removeChild(currentScript);
   };
   document.head.appendChild(script);
 };
 
 windowMounted();
+
+browser.runtime.onMessage.addListener((req) => {
+  if (req?.source === "swagger-mock-list") {
+    window.postMessage({
+      source: CONTENT_SCRIPT_ID,
+      action: "updateMockList",
+      mockList: req?.data,
+    });
+  }
+});
 
 export {};

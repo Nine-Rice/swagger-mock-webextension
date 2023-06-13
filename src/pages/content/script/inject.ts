@@ -1,6 +1,15 @@
 import { proxy } from "ajax-hook";
 import { MockTreeItem } from "@src/pages/options/utils";
 
+// 从lodash/escapeRegExp中拷贝的方法
+function escapeRegExp(string) {
+  const reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+  const reHasRegExpChar = RegExp(reRegExpChar.source);
+  return string && reHasRegExpChar.test(string)
+    ? string.replace(reRegExpChar, "\\$&")
+    : string;
+}
+
 const generateResponseData = (mock: MockTreeItem) => {
   const faker = window._swaggerMock.faker;
   const { dataType, dataValue, children } = mock || {};
@@ -119,9 +128,12 @@ proxy({
   onResponse: (response, handler) => {
     const { url, method } = response?.config || {};
     try {
-      const mockList = window._swaggerMock.mockList;
+      const mockList = window._swaggerMock?.mockList;
       const mockItem = mockList?.find(
         (item) =>
+          new RegExp(
+            escapeRegExp(item.hostMatching).replace(/\\\*/g, ".*")
+          ).test(url) &&
           url.includes(item.url) &&
           item.method.toUpperCase() === method.toUpperCase() &&
           !item.isDisabled
@@ -130,6 +142,7 @@ proxy({
         response.status = 200;
         const mock = mockItem.mockTree.find((item) => item.key === "response");
         response.response = generateResponseData(mock);
+        console.log("swaggerMock数据：", response.response);
       }
     } finally {
       handler.next(response);
