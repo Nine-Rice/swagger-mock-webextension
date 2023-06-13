@@ -9,18 +9,18 @@ const manifest: chrome.runtime.ManifestV3 = {
   version: packageJson.version,
   description: packageJson.description,
   options_page: "src/pages/options/index.html",
-  background: {
-    service_worker: "src/pages/background/index.js",
-    type: "module",
-  },
-  permissions: ["storage"],
+  // background: {
+  //   service_worker: "src/pages/background/index.js",
+  //   type: "module",
+  // },
+  permissions: ["storage", "tabs"],
   action: {
     default_popup: "src/pages/popup/index.html",
     default_icon: "icon-34.png",
   },
-  chrome_url_overrides: {
-    newtab: "src/pages/newtab/index.html",
-  },
+  // chrome_url_overrides: {
+  //   newtab: "src/pages/newtab/index.html",
+  // },
   icons: {
     "128": "icon-128.png",
   },
@@ -32,7 +32,7 @@ const manifest: chrome.runtime.ManifestV3 = {
       css: ["assets/css/contentStyle<KEY>.chunk.css"],
     },
   ],
-  devtools_page: "src/pages/devtools/index.html",
+  // devtools_page: "src/pages/devtools/index.html",
   web_accessible_resources: [
     {
       resources: [

@@ -1,55 +1,105 @@
-import { Space, Switch, Table } from "antd";
+import { Space, Switch, Table, Typography } from "antd";
 import { MockItem } from "@src/storage/types";
 import ApiPaper from "@src/pages/options/components/ApiPaper";
 import ApiSelector from "./ApiSelector";
-import { MockTreeItem, generateMockTree } from "@src/pages/options/utils";
-import { EditFilled, ReloadOutlined } from "@ant-design/icons";
+import { generateMockTree } from "@src/pages/options/utils";
+import { ReloadOutlined } from "@ant-design/icons";
 import MockTree from "./MockTree";
 import DeleteAction from "../../components/TableActions/Delete";
 import mockTreeMap from "../../utils/mockTreeMap";
 
 const MockTable: React.FC<{
-  onEdit?: (mockTree: MockTreeItem[]) => void;
+  scene?: "popup";
 }> = (props) => {
-  const { onEdit } = props || {};
+  const initDone = React.useRef(false);
+  const { scene } = props || {};
+  const isPopup = scene === "popup";
   const { data, deleteAsync, isLoading, updateAsync } = useArrayStorageMutation(
     storage.mockList
   );
 
+  const asyncMockList = React.useCallback(async () => {
+    const tabs = await browser.tabs.query({
+      status: "complete",
+    });
+    tabs.forEach((tab) => {
+      browser.tabs.sendMessage(tab.id, {
+        source: "swagger-mock-list",
+        data,
+      });
+    });
+  }, [data]);
+
+  React.useEffect(() => {
+    if (!isLoading) {
+      if (!initDone.current) {
+        initDone.current = true;
+      } else {
+        asyncMockList();
+      }
+    }
+  }, [asyncMockList, data, isLoading]);
+
   return (
     <Table<MockItem>
       bordered
+      size={isPopup ? "small" : "middle"}
       loading={isLoading}
-      expandable={{
-        expandedRowRender: (record) => {
-          const { id, mockTree } = record || {};
-          return (
-            <MockTree
-              dataSource={record.mockTree}
-              onSubmit={async (vals) => {
-                await updateAsync({
-                  id,
-                  mockTree: mockTreeMap(mockTree, (item) => {
-                    if (vals.mockTreeItemId === item.id) {
-                      return {
-                        ...item,
-                        ...vals,
-                      };
-                    }
-                    return item;
-                  }),
-                });
-              }}
-            ></MockTree>
-          );
-        },
-      }}
+      expandable={
+        isPopup
+          ? undefined
+          : {
+              expandedRowRender: (record) => {
+                const { id, mockTree } = record || {};
+                return (
+                  <MockTree
+                    dataSource={record.mockTree}
+                    onSubmit={async (vals) => {
+                      await updateAsync({
+                        id,
+                        mockTree: mockTreeMap(mockTree, (item) => {
+                          if (vals.mockTreeItemId === item.id) {
+                            return {
+                              ...item,
+                              ...vals,
+                            };
+                          }
+                          return item;
+                        }),
+                      });
+                    }}
+                  ></MockTree>
+                );
+              },
+            }
+      }
       rowKey="id"
       columns={[
-        {
-          title: "网址通配符",
-          dataIndex: "hostMatching",
-        },
+        ...(isPopup
+          ? []
+          : [
+              {
+                title: "网址通配符",
+                dataIndex: "hostMatching",
+                render(hostMatching, record) {
+                  const { id } = record || {};
+                  return (
+                    <Typography.Paragraph
+                      editable={{
+                        onChange: async (str) => {
+                          await updateAsync({
+                            id,
+                            hostMatching: str,
+                          });
+                        },
+                      }}
+                    >
+                      {hostMatching}
+                    </Typography.Paragraph>
+                  );
+                },
+              },
+            ]),
         {
           title: "接口",
           dataIndex: "url",
@@ -88,7 +138,7 @@ const MockTable: React.FC<{
           title: "操作",
           dataIndex: "action",
           render(_, record) {
-            const { id, mockTree, schema } = record || {};
+            const { id, schema } = record || {};
             return (
               <Space>
                 <ReloadOutlined
@@ -100,12 +150,6 @@ const MockTable: React.FC<{
                     });
                   }}
                 />
-                <EditFilled
-                  className="cursor-pointer c-blue"
-                  onClick={async () => {
-                    onEdit?.(mockTree);
-                  }}
-                />
                 <DeleteAction onConfirm={() => deleteAsync(id)}></DeleteAction>
               </Space>
             );
@@ -114,7 +158,7 @@ const MockTable: React.FC<{
       ]}
       dataSource={data}
       pagination={false}
-      footer={() => <ApiSelector></ApiSelector>}
+      footer={() => <ApiSelector scene={scene}></ApiSelector>}
     ></Table>
   );
 };

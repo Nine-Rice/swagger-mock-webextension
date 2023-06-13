@@ -9,7 +9,11 @@ type OptionItem = {
   operationObject: OpenAPIV3.OperationObject;
 } & Omit<MockItem, "schema" | "mockTree">;
 
-const ApiSelector = () => {
+const ApiSelector: React.FC<{
+  scene?: "popup";
+}> = (props) => {
+  const { scene } = props || {};
+  const isPopup = scene === "popup";
   const { data } = useArrayStorageMutation(storage.swaggerUrlList);
   const { addAsync } = useArrayStorageMutation(storage.mockList);
   const [searchWord, setSeachWord] = React.useState<string>("");
@@ -52,7 +56,7 @@ const ApiSelector = () => {
     <Select
       size="large"
       mode="multiple"
-      className="w-600px"
+      className="w-100%"
       value={[]}
       filterOption={false}
       showSearch
@@ -61,6 +65,9 @@ const ApiSelector = () => {
           setSeachWord("");
         }
       }}
+      popupClassName={`${isPopup ? "translate-y-50px" : ""}`}
+      placeholder="搜索接口"
+      getPopupContainer={(node) => node}
       options={data?.map((item) => {
         const { id, label } = item || {};
         const childOptions = dataSource

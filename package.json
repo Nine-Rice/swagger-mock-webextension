@@ -1,7 +1,7 @@
 {
-  "name": "chrome-extension-boilerplate-react-vite",
+  "name": "swagger-mock-webextension",
   "version": "0.0.1",
-  "description": "chrome extension boilerplate",
+  "description": "swagger mock generator",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -182,7 +182,7 @@ const generateMockTree = async (
       result.push({
         ...commonItem,
         dataType: "object",
-        dataValue: storageDataTypeValue.array,
+        dataValue: {},
         children: await transformObjectData(properties),
       });
       break;
@@ -201,7 +201,7 @@ const generateMockTree = async (
         mockItem.children = await transformObjectData(items.properties);
         mockItem.showDataType = "Array<object>";
       } else {
-        dataValue.item = (await generateMockTree(items))[0];
+        mockItem.dataValue.item = (await generateMockTree(items, key))[0];
         mockItem.showDataType = `Array<${dataValue.item.dataType}>`;
       }
       result.push(mockItem);

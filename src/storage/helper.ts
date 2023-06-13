@@ -14,9 +14,9 @@ export class StorageLocal<Value> {
   };
 
   get = async () => {
-    return (
+    return _.cloneDeep(
       ((await storage.local.get(this.key))[this.key] as Value) ??
-      this.defaultValue
+        this.defaultValue
     );
   };
 }
