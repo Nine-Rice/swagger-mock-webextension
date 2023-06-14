@@ -1,4 +1,4 @@
-import { Space, Switch, Table, Typography } from "antd";
+import { Space, Switch, Table, Tooltip, Typography } from "antd";
 import { MockItem } from "@src/storage/types";
 import ApiPaper from "@src/pages/options/components/ApiPaper";
 import ApiSelector from "./ApiSelector";
@@ -46,7 +46,7 @@ const MockTable: React.FC<{
       size={isPopup ? "small" : "middle"}
       loading={isLoading}
       expandable={
-        isPopup
+        isPopup || isLoading
           ? undefined
           : {
               expandedRowRender: (record) => {
@@ -141,15 +141,17 @@ const MockTable: React.FC<{
             const { id, schema } = record || {};
             return (
               <Space>
-                <ReloadOutlined
-                  className="cursor-pointer c-grey"
-                  onClick={async () => {
-                    updateAsync({
-                      id,
-                      mockTree: await generateMockTree(schema),
-                    });
-                  }}
-                />
+                <Tooltip title="重新生成mock数据">
+                  <ReloadOutlined
+                    className="cursor-pointer c-grey"
+                    onClick={async () => {
+                      updateAsync({
+                        id,
+                        mockTree: await generateMockTree(schema),
+                      });
+                    }}
+                  />
+                </Tooltip>
                 <DeleteAction onConfirm={() => deleteAsync(id)}></DeleteAction>
               </Space>
             );

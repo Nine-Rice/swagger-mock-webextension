@@ -1,4 +1,4 @@
-import { Button, Select, SelectProps } from "antd";
+import { Button, Select, SelectProps, message } from "antd";
 import { generateMockTree, transformSchemaRef } from "@src/pages/options/utils";
 import { MockItem } from "@src/storage/types";
 import ApiPaper, { MethodType } from "@src/pages/options/components/ApiPaper";
@@ -15,7 +15,11 @@ const ApiSelector: React.FC<{
   const { scene } = props || {};
   const isPopup = scene === "popup";
   const { data } = useArrayStorageMutation(storage.swaggerUrlList);
-  const { addAsync } = useArrayStorageMutation(storage.mockList);
+  const {
+    data: mockList,
+    addAsync,
+    updateAsync,
+  } = useArrayStorageMutation(storage.mockList);
   const [searchWord, setSeachWord] = React.useState<string>("");
 
   const dataSource = React.useMemo(() => {
@@ -72,43 +76,61 @@ const ApiSelector: React.FC<{
         const { id, label } = item || {};
         const childOptions = dataSource
           .filter((op) => op.swaggerUrlId === id && op.url.includes(searchWord))
-          .map((op) => ({
-            label: (
-              <ApiPaper
-                title={op.url}
-                method={op.method}
-                searchWords={[searchWord]}
-                desc={op.desc}
-                actions={[
-                  <Button
-                    type="primary"
-                    key="add"
-                    onClick={async () => {
-                      const ref =
-                        _.get(
-                          op.operationObject,
-                          "responses.200.content.*/*.schema.$ref"
-                        ) || "";
-                      const schema = transformSchemaRef(item.apiDocument, ref);
-                      addAsync(
-                        _.omit(
-                          {
-                            ...op,
+          .map((op) => {
+            const { url, method, desc, operationObject } = op || {};
+            const mockItem = mockList?.find(
+              (mock) => mock.url === url && mock.method === method
+            );
+            return {
+              label: (
+                <ApiPaper
+                  title={url}
+                  method={method}
+                  searchWords={[searchWord]}
+                  desc={desc}
+                  actions={[
+                    <Button
+                      type={mockItem ? "primary" : "default"}
+                      key="add"
+                      onClick={async () => {
+                        const ref =
+                          _.get(
+                            operationObject,
+                            "responses.200.content.*/*.schema.$ref"
+                          ) || "";
+                        const schema = transformSchemaRef(
+                          item.apiDocument,
+                          ref
+                        );
+                        if (mockItem) {
+                          await updateAsync({
+                            id: mockItem.id,
                             schema,
                             mockTree: await generateMockTree(schema),
-                          },
-                          ["operationObject"]
-                        )
-                      );
-                    }}
-                  >
-                    添加
-                  </Button>,
-                ]}
-              ></ApiPaper>
-            ),
-            id: op.id,
-          }));
+                          });
+                          message.success("更新成功");
+                        } else {
+                          addAsync(
+                            _.omit(
+                              {
+                                ...op,
+                                schema,
+                                mockTree: await generateMockTree(schema),
+                              },
+                              ["operationObject"]
+                            )
+                          );
+                        }
+                      }}
+                    >
+                      {mockItem ? "更新" : "添加"}
+                    </Button>,
+                  ]}
+                ></ApiPaper>
+              ),
+              id: op.id,
+            };
+          });
         return {
           label,
           options: childOptions,
