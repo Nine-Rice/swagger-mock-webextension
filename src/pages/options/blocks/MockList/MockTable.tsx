@@ -17,6 +17,7 @@ const MockTable: React.FC<{
   const { data, deleteAsync, isLoading, updateAsync } = useArrayStorageMutation(
     storage.mockList
   );
+  const [isReload, setIsReload] = React.useState(false);
 
   const asyncMockList = React.useCallback(async () => {
     const tabs = await browser.tabs.query({
@@ -46,7 +47,7 @@ const MockTable: React.FC<{
       size={isPopup ? "small" : "middle"}
       loading={isLoading}
       expandable={
-        isPopup || isLoading
+        isPopup || isReload
           ? undefined
           : {
               expandedRowRender: (record) => {
@@ -54,8 +55,8 @@ const MockTable: React.FC<{
                 return (
                   <MockTree
                     dataSource={record.mockTree}
-                    onSubmit={async (vals) => {
-                      await updateAsync({
+                    onSubmit={(vals) => {
+                      updateAsync({
                         id,
                         mockTree: mockTreeMap(mockTree, (item) => {
                           if (vals.mockTreeItemId === item.id) {
@@ -145,10 +146,15 @@ const MockTable: React.FC<{
                   <ReloadOutlined
                     className="cursor-pointer c-grey"
                     onClick={async () => {
-                      updateAsync({
-                        id,
-                        mockTree: await generateMockTree(schema),
-                      });
+                      setIsReload(true);
+                      try {
+                        await updateAsync({
+                          id,
+                          mockTree: await generateMockTree(schema),
+                        });
+                      } finally {
+                        setIsReload(false);
+                      }
                     }}
                   />
                 </Tooltip>
