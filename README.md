@@ -36,11 +36,11 @@ Swagger Mock Generator 是一个 Chrome 浏览器扩展,它可以读取 Swagger 
 
 ### Chrome <a name="chrome"></a>
 
-[Chrome 扩展商店地址，审核中...]()
+[Chrome 扩展商店](https://chrome.google.com/webstore/detail/swagger-mock-generator/bfdajcdoeopdmnamacibjldonceaahnh)
 
 ### Edge <a name="edge"></a>
 
-[Edge 扩展商店地址，审核中...]()
+审核中...
 
 ### 本地离线包 <a name="本地离线包"></a>
 
