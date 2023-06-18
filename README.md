@@ -9,7 +9,6 @@
 - [特性 ](#特性-)
 - [安装 ](#安装-)
   - [Chrome ](#chrome-)
-  - [Edge ](#edge-)
   - [本地离线包 ](#本地离线包-)
 - [使用 ](#使用-)
   - [基本使用](#基本使用)
@@ -38,9 +37,9 @@ Swagger Mock Generator 是一个 Chrome 浏览器扩展,它可以读取 Swagger 
 
 [Chrome 扩展商店](https://chrome.google.com/webstore/detail/swagger-mock-generator/bfdajcdoeopdmnamacibjldonceaahnh)
 
-### Edge <a name="edge"></a>
+<!-- ### Edge <a name="edge"></a>
 
-审核中...
+审核中... -->
 
 ### 本地离线包 <a name="本地离线包"></a>
 
@@ -54,8 +53,8 @@ Swagger Mock Generator 是一个 Chrome 浏览器扩展,它可以读取 Swagger 
 
 ### 基本使用
 
-1. 打开设置页面，点击菜单「swagger 文档」，添加 swagger 文档地址
-2. 点击菜单「Mock 接口」，在接口列表底部的搜索框内输入关键词搜索对应的接口，点击「添加」
+1. 打开设置页面，点击菜单「swagger 文档」，添加 swagger ![文档地址](./docs/assets/swagger文档.png)
+2. 点击菜单「Mock 接口」，在接口列表底部的搜索框内输入关键词搜索对应的接口，点击「添加」![](./docs/assets/mock接口.png)
 3. 回到页面，重新请求接口，即可看到接口返回的 Mock 数据
 
 ### 转化规则的使用
@@ -80,7 +79,7 @@ Swagger Mock Generator 是一个 Chrome 浏览器扩展,它可以读取 Swagger 
   }
 }
 
-         ↓
+    ↓ ↓ ↓
 
 {
 "code": 200,
