@@ -25,18 +25,15 @@ const generateResponseData = (mock: MockTreeItem) => {
     case "number": {
       const { stringMode, max, min, precision = 0, isRetainZero } = dataValue;
       if (stringMode || isRetainZero) {
-        const prefixIntStr = faker.string.numeric({
-          length: {
-            max,
-            min,
-          },
-          allowLeadingZeros: false,
+        const prefixIntStr = faker.number.int({
+          max,
+          min,
         });
         // isRetainZero - 是否保留尾数0
         const mantissa = faker.string
           .numeric(precision)
           .replace(isRetainZero ? "" : /0+?$/, "");
-        result = `${prefixIntStr}${precision === 0 ? "" : mantissa}`;
+        result = `${prefixIntStr}${precision === 0 ? "" : "." + mantissa}`;
       } else {
         result = faker.number.float({
           max,
