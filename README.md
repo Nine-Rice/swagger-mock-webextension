@@ -9,6 +9,7 @@
 - [特性 ](#特性-)
 - [安装 ](#安装-)
   - [Chrome ](#chrome-)
+  - [Edge ](#edge-)
   - [本地离线包 ](#本地离线包-)
 - [使用 ](#使用-)
   - [基本使用](#基本使用)
@@ -37,9 +38,9 @@ Swagger Mock Generator 是一个 Chrome 浏览器扩展,它可以读取 Swagger 
 
 [Chrome 扩展商店](https://chrome.google.com/webstore/detail/swagger-mock-generator/bfdajcdoeopdmnamacibjldonceaahnh)
 
-<!-- ### Edge <a name="edge"></a>
+### Edge <a name="edge"></a>
 
-审核中... -->
+[Edge 扩展商店](https://microsoftedge.microsoft.com/addons/detail/swaggermockgenerator/hbabiinlpmfelfmbngjppkpkhlohjolp)
 
 ### 本地离线包 <a name="本地离线包"></a>
 
