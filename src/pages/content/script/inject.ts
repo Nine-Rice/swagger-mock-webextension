@@ -26,7 +26,7 @@ const generateResponseData = (mock: MockTreeItem) => {
       const { stringMode, max, min, precision = 0, isRetainZero } = dataValue;
       if (stringMode || isRetainZero) {
         const prefixIntStr = faker.number.int({
-          max,
+          max: max === min ? max : max - 1,
           min,
         });
         // isRetainZero - 是否保留尾数0
